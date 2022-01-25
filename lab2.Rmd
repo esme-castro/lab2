@@ -9,8 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-
+```{r load-data}
+install.packages("fivethirtyeight")
+remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
+library(fivethirtyeight)
+library(fivethirtyeightdata)
 ```
 
 

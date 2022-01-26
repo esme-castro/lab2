@@ -21,6 +21,7 @@ library(tidyverse)
 ```{r}
 google <- google_trends
 tv <- tv_states
+q3 <- comic_characters
 ```
 
 Need to pivot_longer() to make single vector with "hurricane)
@@ -71,8 +72,15 @@ df %>%
        y = "Percent of Comic Characters",
        title = "Gender Proportion of Comic Characters")
 
-
-
+q3 %>% 
+  count(sex, sort = TRUE) %>% 
+  mutate(sex = reorder(sex, n)) %>%        # can make this visual better
+    ggplot(aes(n, sex)) +
+    geom_col(fill = "#ffa200") +
+  theme_minimal() +
+  labs(x = "Gender",
+       y = "Percent of Comic Characters",
+       title = "Gender Proportion of Comic Characters")
 
 ```
 

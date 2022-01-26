@@ -54,4 +54,25 @@ df <- data.frame(id, hurricane_name, landfall)
 
 
 
+Q3. comic_characters dataset
+<!-- working on this -->
+```{r}
+# get proportions
+df <- q3 %>%
+  mutate(sex = tolower(sex)) %>% 
+  count(sex)
+
+# Provide 3 different visuals
+df %>% 
+  ggplot(aes(sex, n)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "Gender",
+       y = "Percent of Comic Characters",
+       title = "Gender Proportion of Comic Characters")
+
+
+
+
+```
 

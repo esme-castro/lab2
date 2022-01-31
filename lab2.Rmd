@@ -1,3 +1,4 @@
+
 ---
 title: "lab2"
 author: "Esme, Zach, Mandi"
@@ -107,3 +108,150 @@ ggplot(aes(tv_longer.date, tv_longer.share)) +
 ```
 
 
+
+---
+title: "lab2"
+author: "Esme, Zach, Mandi"
+date: "1/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-data}
+install.packages("fivethirtyeight")
+remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
+library(fivethirtyeight)
+library(fivethirtyeightdata)
+library(tidyverse)
+library(tm)
+```
+
+
+```{r}
+google <- google_trends
+tv <- tv_states
+q3 <- comic_characters
+```
+
+Need to pivot_longer() to make single vector with "hurricane)
+```{r}
+goog_longer <- pivot_longer(data = google,
+             cols = 2:5,
+             names_to = "hurricane",
+             values_to = "trends")
+```
+
+```{r}
+ggplot(goog_longer, aes(date, trends)) +
+  geom_line(aes(color = hurricane)) +
+  geom_point(aes(color = hurricane,
+                 shape = hurricane))
+```
+
+Visualize with solid shapes NEED TO DOOOOO
+```{r}
+ggplot(goog_longer) +
+  geom_point(aes(date, trends, 
+                 color = hurricane,
+                 shape = hurricane)) #Is this what he means by visualizing with solid shapes?
+
+?geom_ribbon
+ggplot(goog_longer, aes(date)) +
+  geom_ribbon(aes(ymin = 0, ymax=trends, fill = hurricane)) #or is this what he wants?
+```
+
+<!-- Zach, I think when I merged my branch it was not done correctly and there was extra of everything. I removed exact duplicates but these two code chunks (above and below) were the only thing different so I kept both since you would know better which is the most accurate version. Sorry!! -->
+
+Visualize the same relation, but change the scales so color is mapped to a continuous scale (the other scales should be discrete).
+```{r}
+ggplot(goog_longer) +
+  geom_point(aes(hurricane, date,
+                 color = trends), size = 3) # is this what he is looking for?
+```
+
+Visualize the same relation, but change the scales so color is mapped to a continuous scale (the other scales should be discrete).
+```{r}
+id <- 1:4
+hurricane_name <- c("Harvey", "Irma","Jose", "Maria")
+landfall <- c("2017-08-2017", "2017-10-2017", "NA", "2017-09-2017")
+df <- data.frame(id, hurricane_name, landfall)
+```
+
+Make DataFrame
+```{r}
+id <- 1:4
+hurricane_name <- c("Harvey", "Irma","Jose", "Maria")
+landfall <- as.Date(c("2017-08-25", "2017-09-10", "NA", "2017-09-20"))
+df <- data.frame(id, hurricane_name, landfall)
+```
+
+Add Vline
+```{r}
+ggplot(goog_longer, aes(date, trends)) +
+  geom_line(aes(color = hurricane)) +
+  geom_vline(xintercept = df$landfall) #Still need to figure out how to either make them match the colors of goog_longer$hurricane or to add labels to the vlines
+```
+
+Q3. comic_characters dataset
+<!-- working on making prettier and reordering; want another kind besides bar charts -->
+```{r}
+# get proportions
+df <- q3 %>%
+  mutate(sex = tolower(sex)) %>% 
+  count(sex)
+
+# removing word characters from column 'sex'
+## using tm library here
+
+stopwords = readLines('stopwords.txt')     #Your stop words file
+x  = df$sex        #Company column data
+x  =  removeWords(x,stopwords)     #Remove stopwords
+df$sex_new <- x     #Add the list as new column and check
+
+# proportion by publisher
+df_p <- q3 %>%
+  group_by(publisher) %>% 
+  mutate(sex = tolower(sex)) %>% 
+  count(sex)
+
+# removing word characters from column 'sex'
+## using tm library here
+
+stopwords = readLines('stopwords.txt')     #Your stop words file
+x  = df_p$sex        #Company column data
+x  =  removeWords(x,stopwords)     #Remove stopwords
+df_p$sex_new <- x     #Add the list as new column and check
+
+# Provide 3 different visuals
+df %>% 
+  ggplot(aes(sex_new, n)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "Gender",
+       y = "Percent of Comic Characters",
+       title = "Gender Proportion of Comic Characters")
+
+q3 %>% 
+  count(sex, sort = TRUE) %>% 
+  mutate(sex = reorder(sex, n)) %>%        # can make this visual better
+    ggplot(aes(n, sex)) +
+    geom_col(fill = "#ffa200") +
+  theme_minimal() +
+  labs(x = "Gender",
+       y = "Percent of Comic Characters",
+       title = "Gender Proportion of Comic Characters")
+
+df_p %>% 
+  group_by(publisher) %>% 
+  ggplot(aes(sex_new,n)) +
+  geom_col(fill = "seagreen4") +
+  facet_wrap(~publisher) +
+  theme_minimal() +
+  labs(x = "Gender",
+       y = "Percent of Comic Characters",
+       title = "Gender and the Universes")
+
+```

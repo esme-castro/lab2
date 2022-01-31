@@ -13,6 +13,116 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load-data}
 install.packages("fivethirtyeight")
 remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
+install.packages("formattable")
+library(fivethirtyeight)
+library(fivethirtyeightdata)
+library(tidyverse)
+library(formattable)
+library(ggridges)
+library(lubridate)
+```
+
+
+```{r}
+google <- google_trends
+tv <- tv_states
+```
+
+Need to pivot_longer() to make single vector with "hurricane)
+```{r}
+goog_longer <- pivot_longer(data = google,
+             cols = 2:5,
+             names_to = "hurricane",
+             values_to = "trends")
+```
+
+```{r}
+ggplot(goog_longer, aes(date, trends)) +
+  geom_line(aes(color = hurricane))
+```
+
+Visualize with solid shapes
+```{r}
+?geom_ribbon
+ggplot(goog_longer, aes(date, trends)) +
+  geom_point(aes(shape = hurricane,
+                 color = hurricane))
+```
+
+Visualize the same relation, but change the scales so color is mapped to a continuous scale (the other scales should be discrete).
+```{r}
+id <- 1:4
+hurricane_name <- c("Harvey", "Irma","Jose", "Maria")
+landfall <- c("2017-08-2017", "2017-10-2017", "NA", "2017-09-2017")
+df <- data.frame(id, hurricane_name, landfall)
+```
+
+Q2...Mandi's part
+Needed to pivot_longer and convert data to percentage
+```{r}
+tv_longer <- pivot_longer(data = tv,
+             cols = 2:4,
+             names_to = "state",
+             values_to = "share")
+#used pivot_longer to combine states into one column and put their values in another
+
+df2 = data.frame(tv_longer$date, tv_longer$state, tv_longer$share)
+df2$tv_longer.share <- percent(df2$tv_longer.share)
+df2
+
+#converted values to percentages
+
+```
+
+
+
+
+
+Replication of visualization 
+```{r}
+df2 %>% 
+  ggplot(aes(tv_longer.date, tv_longer.share)) +
+  geom_line(aes(color = tv_longer.state)) +
+  labs(x = "", 
+       y = "Share of sentences", 
+       title = "National cable news networks", 
+       caption = "Includes Bloomberg, CNBC, CNN, Fox Business, Fox News and MSNBC.")
+ 
+df2 %>% 
+ggplot(aes(tv_longer.date, tv_longer.share)) +
+  geom_ribbon(aes(ymin = -Inf, xmin = -Inf, xmax = Inf, ymax = tv_longer.share, fill = tv_longer.state)) +
+  labs(x = "", 
+       y = "Share of sentences", 
+       title = "National cable news networks", 
+       caption = "Includes Bloomberg, CNBC, CNN, Fox Business, Fox News and MSNBC.") +
+  theme_minimal() +
+  scale_fill_manual(values=c("hot pink", "#00a4b3", "dark orange"), name="fill")
+
+?geom_ribbon
+  
+ #mutate(tv_longer.date = fct_relevel(tv_longer.date, "AUG. 15. 2017", "SEPT. 1", "SEPT. 15", "OCT. 1")) %>% 
+
+
+
+
+```
+
+
+
+---
+title: "lab2"
+author: "Esme, Zach, Mandi"
+date: "1/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-data}
+install.packages("fivethirtyeight")
+remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(tidyverse)

@@ -28,6 +28,7 @@ tv <- tv_states
 q3 <- comic_characters
 ```
 
+## Number 1
 Need to pivot_longer() to make single vector with "hurricane)
 ```{r}
 goog_longer <- pivot_longer(data = google,
@@ -36,60 +37,49 @@ goog_longer <- pivot_longer(data = google,
              values_to = "trends")
 ```
 
+### Visualize With Line
 ```{r}
+ggplot(goog_longer, aes(date, trends)) +
+  geom_line(aes(color = hurricane))
+```
+
+### Visualize with solid shapes
+```{r}
+#Example of with shapes only
+ggplot(goog_longer) +
+  geom_point(aes(date, trends, 
+                 color = hurricane,
+                 shape = hurricane)) 
+```
+
+
+### Line and Shape
+```{r}
+#Example with line and shapes
 ggplot(goog_longer, aes(date, trends)) +
   geom_line(aes(color = hurricane)) +
   geom_point(aes(color = hurricane,
                  shape = hurricane))
 ```
 
-
-
-
-
-<!-- Zach, check code chunk below and right after to see which is correct -->
-Visualize with solid shapes NEED TO DOOOOO
+### Using Ribbon
 ```{r}
-ggplot(goog_longer) +
-  geom_point(aes(date, trends, 
-                 color = hurricane,
-                 shape = hurricane)) #Is this what he means by visualizing with solid shapes?
-
+#Example with ribbon
 ?geom_ribbon
 ggplot(goog_longer, aes(date)) +
-  geom_ribbon(aes(ymin = 0, ymax=trends, fill = hurricane)) #or is this what he wants?
-```
-
-Visualize with solid shapes
-```{r}
-?geom_ribbon
-ggplot(goog_longer, aes(date, trends)) +
-  geom_point(aes(shape = hurricane,
-                 color = hurricane))
+  geom_ribbon(aes(ymin = 0, ymax=trends, fill = hurricane))
 ```
 
 
-
-
-
-<!-- Zach, same here with the two code chunks below -->
 Visualize the same relation, but change the scales so color is mapped to a continuous scale (the other scales should be discrete).
 ```{r}
 ggplot(goog_longer) +
   geom_point(aes(hurricane, date,
                  color = trends), size = 3) # is this what he is looking for?
+# could not come up with other ways to do this. . . 
 ```
 
-Visualize the same relation, but change the scales so color is mapped to a continuous scale (the other scales should be discrete).
-```{r}
-id <- 1:4
-hurricane_name <- c("Harvey", "Irma","Jose", "Maria")
-landfall <- c("2017-08-2017", "2017-10-2017", "NA", "2017-09-2017")
-df <- data.frame(id, hurricane_name, landfall)
-```
-
-<!-- And Zach, this is the same code chunk as above but a different title? -->
-Make DataFrame
+### Make DataFrame
 ```{r}
 id <- 1:4
 hurricane_name <- c("Harvey", "Irma","Jose", "Maria")
@@ -101,8 +91,36 @@ Add Vline
 ```{r}
 ggplot(goog_longer, aes(date, trends)) +
   geom_line(aes(color = hurricane)) +
-  geom_vline(xintercept = df$landfall) #Still need to figure out how to either make them match the colors of goog_longer$hurricane or to add labels to the vlines
+  geom_vline(xintercept = df$landfall) +
+  labs(title = "Google Trends of Hurricanes (2017)",
+       caption = "Vertical lines representing 
+       hurricane landfall - from left to right - 
+       Hurricane Harvey, Hurricane Irma, Hurricane Maria. 
+       Hurricane Jose did not make landfall")
+
+#Still need to figure out how to either make them match the colors of goog_longer$hurricane or to add labels to the vlines
 ```
+
+
+### Tried to change legend labels
+```{r}
+ggplot(goog_longer, aes(date, trends)) +
+  geom_line(aes(color = hurricane)) +
+  scale_fill_discrete(name = "Hurricane",
+                      labels = c("Hurricane Harvey",
+                                 "Hurricane Irma",
+                                 "Hurricane Jose",
+                                 "Hurricane Maria")) +
+  geom_vline(xintercept = df$landfall) +
+  labs(title = "Google Trends of Hurricanes (2017)",
+       caption = "Vertical lines representing 
+       hurricane landfall - from left to right - 
+       Hurricane Harvey, Hurricane Irma, Hurricane Maria. 
+       Hurricane Jose did not make landfall")
+# BUT I FAILED...
+```
+
+
 
 Q2...Mandi's part
 Needed to pivot_longer and convert data to percentage
